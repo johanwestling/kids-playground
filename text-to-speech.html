@@ -4,83 +4,103 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Text to speech</title>
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
   <style>
     body {
+      overflow: hidden;
+      margin: 0;
+    }
+
+    #app {
       width: 100vw;
       height: 100vh;
       background: var(--app-background, #00805d);
-      overflow: auto;
-      margin: 0;
-      display: flex;
-      flex-flow: row;
-      justify-content: center;
-      align-items: center;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1em auto auto 1em;
+      grid-template-rows: 1fr auto auto 1fr;
+      grid-gap: 1em;
+
+      font-size: 3vw;
 
       transition: background 1s cubic-bezier(0,1.41,.97,1.08);
     }
 
-    #app {
-      display: block;
-      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-      font-size: 5vw;
-      text-shadow: .01em .05em .1em black;
-      color: white;
+    #app input {
+      height: 2em;
+      background: white;
+      padding: 0 .5em .1em;
+      border: 1px solid black;
+      border-radius: .3em;
+      outline: transparent;
+      box-shadow: -.1em -.1em .2em rgba(255,255,255,.25), .1em .1em .2em rgba(0,0,0,.35);
+      margin: 0;
+
+      grid-column: 2 / span 2;
+      grid-row: 2 / span 1;
+
+      font-family: 'Permanent Marker', cursive;
+      font-size: 1em;
+      letter-spacing: -.025em;
+      text-align: center;
+      color: black;
     }
 
     #controls {
-      display: flex;
-      flex-flow: row;
-      justify-content: center;
-      align-items: center;
+      grid-column: 2 / span 2;
+      grid-row: 3 / span 1;
 
-      position: fixed;
-      right: 0;
-      bottom: 0;
-      left: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 1em;
     }
 
-    #controls button {
+    #app button {
+      height: 2em;
       background: black;
-      padding: .25em .75em .4em;
+      padding: 0 .5em;
       border: none;
       border-radius: .25em;
       box-shadow: -.1em -.1em .2em rgba(255,255,255,.25), .1em .1em .2em rgba(0,0,0,.35);
       outline: transparent;
-      margin: 0 .25em .5em;
+      margin: 0;
 
-      font-size: 2em;
+      font-size: 1em;
       color: white;
     }
   </style>
 </head>
 <body>
   <div id="app">
-    Enter something here and I'll read it four you!
-  </div>
-  <div id="controls">
-    <button id="speak">🔊</button>
-    <button id="color">🎨</button>
+    <input id="content" type="text" value="Enter something here and I'll read it four you!">
+    <div id="controls">
+      <button id="read">🔊</button>
+      <button id="color">🎨</button>
+    </div>
   </div>
   <script>
-    let app = document.querySelector('#app');
-    let speak = document.querySelector('#speak');
-    let color = document.querySelector('#color');
+    let content = document.querySelector('input#content');
+    let buttonRead = document.querySelector('button#read');
+    let buttonColor = document.querySelector('button#color');
     let reader = ('speechSynthesis' in window) ? window.speechSynthesis : undefined;
-
-    // Make content editable.
-    app.contentEditable = true;
 
     // Read aloud the app content.
     function read(text){
-      if(app.textContent === '') app.textContent = "Enter something here and I'll read it four you!";
+      if(text === '') {
+        content.value = "Enter something here and I'll read it four you!";
+        return;
+      }
 
       if(reader){
-        let content = new SpeechSynthesisUtterance(text);
-        reader.speak(content);
+        let readerSpeech = new SpeechSynthesisUtterance(text);
+        reader.speak(readerSpeech);
+        return;
       }
+
+      alert('No speech support, sorry...');
     }
 
-    function generate(){
+    function color(){
       let letters = '0123456789ABCDEF';
       let hex = '#';
 
@@ -95,30 +115,26 @@
     addEventListener('keyup', event => {
       if(event.key === 'Enter') {
         event.preventDefault();
-        read(app.textContent);
+        read(content.value);
       }
     });
 
     // Initiate read aloud when app loose focus.
     app.addEventListener('blur', event => {
-      read(app.textContent);
+      read(content.value);
     });
 
-    // Initiate read aloud when speak button is clicked.
-    speak.addEventListener('click', event => {
+    // Initiate read aloud when read-button is clicked.
+    buttonRead.addEventListener('click', event => {
       event.preventDefault();
-      read(app.textContent);
+      read(content.value);
     });
 
     // Change color when color button is clicked.
-    color.addEventListener('click', event => {
+    buttonColor.addEventListener('click', event => {
       event.preventDefault();
-      generate();
+      color();
     });
-
-    setTimeout(() => {
-      read(app.textContent);
-    }, 1000);
   </script>
 </body>
 </html>
