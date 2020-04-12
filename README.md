@@ -1,3 +1,3 @@
 # Kids playground
 
-* [Text to speech](./text-to-speech.html)
+* [Text to speech & random colors](https://inspiring-payne-b4f223.netlify.com/text-to-speech.html)
