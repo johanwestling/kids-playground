@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text to speech</title>
+  <style>
+    body {
+      width: 100vw;
+      height: 100vh;
+      background: var(--app-background, #00805d);
+      overflow: auto;
+      margin: 0;
+      display: flex;
+      flex-flow: row;
+      justify-content: center;
+      align-items: center;
+
+      transition: background 1s cubic-bezier(0,1.41,.97,1.08);
+    }
+
+    #app {
+      display: block;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      font-size: 5vw;
+      text-shadow: .025em .075em .1em black;
+      color: white;
+    }
+
+    #controls {
+      display: flex;
+      flex-flow: row;
+      justify-content: center;
+      align-items: center;
+
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    #controls button {
+      background: black;
+      padding: .25em .75em .4em;
+      border: none;
+      border-radius: .25em;
+      box-shadow: -.1em -.1em .2em rgba(255,255,255,.25), .1em .1em .2em rgba(0,0,0,.35);
+      outline: transparent;
+      margin: 0 .25em .5em;
+
+      font-size: 2em;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    Hey you!
+  </div>
+  <div id="controls">
+    <button id="speak">🔊</button>
+    <button id="color">🎨</button>
+  </div>
+  <script>
+    let app = document.querySelector('#app');
+    let speak = document.querySelector('#speak');
+    let color = document.querySelector('#color');
+    let reader = ('speechSynthesis' in window) ? window.speechSynthesis : undefined;
+
+    // Make content editable.
+    app.contentEditable = true;
+
+    // Read aloud the app content.
+    function read(text){
+      if(reader){
+        let content = new SpeechSynthesisUtterance(text);
+        reader.speak(content);
+      }
+    }
+
+    function generate(){
+      let letters = '0123456789ABCDEF';
+      let hex = '#';
+
+      for (let i = 0; i < 6; i++) {
+        hex += letters[Math.floor(Math.random() * 16)];
+      }
+
+      document.body.style.setProperty('--app-background', hex);
+    }
+
+    // Initiate read aloud when ENTER is hit.
+    addEventListener('keyup', event => {
+      if(event.key === 'Enter') {
+        event.preventDefault();
+        read(app.textContent);
+      }
+    });
+
+    // Initiate read aloud when app loose focus.
+    app.addEventListener('blur', event => {
+      read(app.textContent);
+    });
+
+    // Initiate read aloud when speak button is clicked.
+    speak.addEventListener('click', event => {
+      event.preventDefault();
+      read(app.textContent);
+    });
+
+    // Change color when color button is clicked.
+    color.addEventListener('click', event => {
+      event.preventDefault();
+      generate();
+      read('Color change!');
+    });
+  </script>
+</body>
+</html>
