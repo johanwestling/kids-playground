@@ -23,7 +23,7 @@
       display: block;
       font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
       font-size: 5vw;
-      text-shadow: .025em .075em .1em black;
+      text-shadow: .01em .05em .1em black;
       color: white;
     }
 
@@ -55,7 +55,7 @@
 </head>
 <body>
   <div id="app">
-    Hey you!
+    Enter something here and I'll read it four you!
   </div>
   <div id="controls">
     <button id="speak">🔊</button>
@@ -72,6 +72,8 @@
 
     // Read aloud the app content.
     function read(text){
+      if(app.textContent === '') app.textContent = "Enter something here and I'll read it four you!";
+
       if(reader){
         let content = new SpeechSynthesisUtterance(text);
         reader.speak(content);
@@ -99,7 +101,6 @@
 
     // Initiate read aloud when app loose focus.
     app.addEventListener('blur', event => {
-      if(app.textContent === '') app.textContent = 'Enter text';
       read(app.textContent);
     });
 
@@ -113,8 +114,11 @@
     color.addEventListener('click', event => {
       event.preventDefault();
       generate();
-      read('Color change!');
     });
+
+    setTimeout(() => {
+      read(app.textContent);
+    }, 1000);
   </script>
 </body>
 </html>
