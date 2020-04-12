@@ -99,6 +99,7 @@
 
     // Initiate read aloud when app loose focus.
     app.addEventListener('blur', event => {
+      if(app.textContent === '') app.textContent = 'Enter text';
       read(app.textContent);
     });
 
